@@ -1,0 +1,270 @@
+% =====================================================================
+%  tuna.sty -- estilo do cancioneiro da Tuna de Engenharia da U.Porto
+%
+%  Este ficheiro define o aspeto do cancioneiro. Para editar músicas não
+%  é preciso mexer aqui: basta conhecer os comandos resumidos no README.
+%
+%  Compilar com XeLaTeX.
+% =====================================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{tuna}[2026/10/30 Cancioneiro da TEUP]
+
+% --- Opções ----------------------------------------------------------
+% \usepackage[fontesword]{tuna} usa as fontes originais do Word
+% (Trebuchet MS, Times New Roman, Courier New, Old English Text MT),
+% que só existem em computadores com o Microsoft Office instalado.
+\newif\iftuna@fontesword
+\DeclareOption{fontesword}{\tuna@fontesword true}
+\ProcessOptions\relax
+
+% (verificação compatível com distribuições antigas, ex. TeX Live 2019)
+\ifdefined\XeTeXrevision\else\ifdefined\directlua\else
+  \PackageError{tuna}{Este cancioneiro tem de ser compilado com
+    XeLaTeX}{Muda o compilador para XeLaTeX nas definições do
+    editor (no Overleaf: Menu > Compiler > XeLaTeX).}
+\fi\fi
+
+\RequirePackage{fontspec}
+\RequirePackage{xcolor}
+\RequirePackage{etoolbox}
+\RequirePackage{fancyhdr}
+\RequirePackage{multicol}
+\RequirePackage{eso-pic}
+\RequirePackage{fancyvrb}
+
+% --- Página (medidas do documento Word) ------------------------------
+\RequirePackage[a4paper,
+  left=1cm, right=2cm, top=3cm, bottom=2cm,
+  headheight=22pt, headsep=28pt, footskip=28pt]{geometry}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\topskip}{13pt}
+\setlength{\columnsep}{1.27cm}
+\setlength{\multicolsep}{2pt plus 1pt}
+\raggedbottom
+
+% --- Cores -------------------------------------------------------------
+\definecolor{acorde}{HTML}{7F0000}
+\definecolor{cabecalho}{HTML}{8C2D19}
+
+% --- Fontes ------------------------------------------------------------
+\iftuna@fontesword
+  \setmainfont{Trebuchet MS}
+  \setmonofont{Courier New}
+  \newfontfamily\fontetitulo{Times New Roman}
+  \newfontfamily\fontecabecalho{Old English Text MT}
+\else
+  \setmainfont{FiraSans}[
+    Path=fontes/, Extension=.otf,
+    UprightFont=*-Regular, ItalicFont=*-Italic,
+    BoldFont=*-Bold, BoldItalicFont=*-BoldItalic]
+  \setmonofont{LiberationMono}[
+    Path=fontes/, Extension=.ttf,
+    UprightFont=*-Regular, ItalicFont=*-Italic,
+    BoldFont=*-Regular, BoldItalicFont=*-Italic]
+  \newfontfamily\fontetitulo{LiberationSerif}[
+    Path=fontes/, Extension=.ttf,
+    UprightFont=*-Regular, ItalicFont=*-Italic,
+    BoldFont=*-Bold, BoldItalicFont=*-BoldItalic]
+  \newfontfamily\fontecabecalho{UnifrakturMaguntia-Book}[
+    Path=fontes/, Extension=.ttf, FakeBold=1.2]
+\fi
+
+% --- Medidas ajustáveis ------------------------------------------------
+\newlength\recuoletra         \setlength\recuoletra{2cm}    % margem da letra
+\newlength\entrelinha         \setlength\entrelinha{12.1pt} % entre linhas de letra
+\newlength\alturaacordes      \setlength\alturaacordes{9.3pt} % espaço extra p/ acordes
+\newlength\elevacaoacorde     \setlength\elevacaoacorde{12pt} % altura do acorde
+\newlength\espacoestrofe      \setlength\espacoestrofe{9.3pt} % linha em branco
+\newlength\recuotablatura     \setlength\recuotablatura{1cm}
+
+% --- Formatos ----------------------------------------------------------
+\newcommand\formatoletra{\normalfont\fontsize{9}{\entrelinha}\selectfont}
+\newcommand\formatoacorde{\normalfont\itshape\fontsize{8}{9.3}\selectfont\color{acorde}}
+
+% --- Cabeçalho e rodapé ------------------------------------------------
+\newcommand\nometuna{Tuna de Engenharia da Universidade do Porto}
+\pagestyle{fancy}
+\fancyhf{}
+% (centrado sobre a letra, como no Word)
+\fancyhead[C]{\hspace*{\recuoletra}\fontecabecalho\fontsize{18}{20}\selectfont
+  \color{cabecalho}\nometuna}
+\fancyfoot[C]{\normalfont\fontsize{8}{9}\selectfont\color{acorde}\thepage}
+\renewcommand\headrulewidth{0pt}
+\renewcommand\footrulewidth{0pt}
+
+% =====================================================================
+%  Comandos para escrever as músicas
+% =====================================================================
+
+% \ac{Am}{ria} -> acorde Am por cima da sílaba "ria" (sublinhada).
+% \ac{Am}{}    -> acorde nesse ponto, sem sílaba.
+% Se um acorde ficar em cima do anterior, a letra é afastada o
+% suficiente para não se sobreporem.
+\newlength\tuna@larg
+\newlength\espacoentreacordes \setlength\espacoentreacordes{2pt}
+\newbox\tuna@linha
+\newbox\tuna@seg
+\newsavebox\tuna@acorde
+\newdimen\tuna@fim
+\newdimen\tuna@falta
+\newcount\tuna@nivel
+\newif\iftuna@emlinha
+\newif\iftuna@medir
+
+\newcommand\tuna@poeacorde[1]{%
+  \rule{0pt}{\dimexpr\entrelinha+\alturaacordes-\dp\strutbox-\lineskip\relax}%
+  \rlap{\raisebox{\elevacaoacorde}[0pt][0pt]{#1}}}
+
+\newcommand\ac[2]{%
+  \leavevmode
+  \tuna@vermodo
+  \iftuna@medir\expandafter\@firstoftwo\else\expandafter\@secondoftwo\fi
+    {\tuna@acmedido{#1}{#2}}%
+    {\tuna@poeacorde{\formatoacorde #1}\ifblank{#2}{}{\sublinhado{#2}}}}
+
+% Cada linha da letra é montada numa caixa, para se saber onde
+% acabou o acorde anterior.
+\def\tuna@vermodo{%
+  \tuna@medirfalse
+  \iftuna@emlinha\ifnum\currentgrouplevel=\tuna@nivel\relax
+    \tuna@medirtrue\fi\fi}
+\def\tuna@abresegmento{%
+  \setbox\tuna@seg\hbox\bgroup
+  \tuna@emlinhatrue\tuna@nivel=\currentgrouplevel}
+\def\tuna@abrelinha{%
+  \setbox\tuna@linha\hbox{}%
+  \tuna@fim=\z@
+  \tuna@abresegmento}
+\def\tuna@juntasegmento{%
+  \setbox\tuna@linha\hbox{\unhbox\tuna@linha\unhbox\tuna@seg}}
+\def\tuna@fechalinha{\egroup\tuna@juntasegmento\unhbox\tuna@linha}
+\newcommand\tuna@acmedido[2]{%
+  \egroup
+  \tuna@juntasegmento
+  \tuna@falta=\dimexpr\tuna@fim-\wd\tuna@linha\relax
+  \ifdim\tuna@falta>\z@
+    \setbox\tuna@linha\hbox{\unhbox\tuna@linha\kern\tuna@falta}%
+  \fi
+  \sbox\tuna@acorde{\formatoacorde #1}%
+  \tuna@fim=\dimexpr\wd\tuna@linha+\wd\tuna@acorde+\espacoentreacordes\relax
+  \setbox\tuna@linha\hbox{\unhbox\tuna@linha
+    \tuna@poeacorde{\usebox\tuna@acorde}\ifblank{#2}{}{\sublinhado{#2}}}%
+  \tuna@abresegmento}
+
+% \sublinhado{texto}: sublinhado fino, sempre à mesma altura.
+\newcommand\sublinhado[1]{%
+  \settowidth\tuna@larg{#1}%
+  \rlap{\rule[-1.3pt]{\tuna@larg}{0.45pt}}#1}
+
+% \nota{Refrão:} -> indicação a vermelho (secções, repetições, ...).
+% Numa linha sozinha ocupa só a altura da letra pequena, como no Word.
+\newcommand\nota[1]{%
+  \ifvmode
+    \begingroup\everypar{}\leavevmode\endgroup
+    \baselineskip=9.3pt \lineskiplimit=-3pt
+    \rule[-2.8pt]{0pt}{8.4pt}%
+    {\formatoacorde #1}%
+  \else
+    {\formatoacorde #1}%
+  \fi}
+
+% --- Ambiente musica -----------------------------------------------------
+% \begin{musica}{Título}{Original}{Adaptação}
+%   Cada linha do ficheiro é uma linha da letra;
+%   uma linha em branco deixa um pequeno espaço.
+% \end{musica}
+\newcounter{musica}
+{\catcode`\^^M=\active %
+ \gdef\tuna@linhaporlinha{\catcode`\^^M=\active \let^^M\tuna@fimdelinha}%
+}
+\def\tuna@fimdelinha{%
+  \tuna@vermodo
+  \iftuna@medir\expandafter\tuna@fechalinha\fi
+  \par\baselineskip=\entrelinha \lineskiplimit=\z@
+  \futurelet\tuna@seguinte\tuna@vebranco}
+\def\tuna@vebranco{%
+  \ifx\tuna@seguinte\tuna@fimdelinha\vspace{\espacoestrofe}\fi}
+
+\newenvironment{musica}[3]{%
+  \clearpage
+  \refstepcounter{musica}%
+  {\centering\fontetitulo\bfseries\itshape\fontsize{14}{16}\selectfont
+    \tuna@entradaindice{#1}#1\par}%
+  \vspace{3.3pt}%
+  {\centering\fontetitulo\itshape\fontsize{8}{9.6}\selectfont
+    \ifblank{#2}{}{\textbf{Orig.:}~#2}%
+    \ifblank{#3}{}{\hspace{1.2em}\textbf{Adap.:}~#3}\par}%
+  \vspace{10pt}%
+  \formatoletra
+  \leftskip=\recuoletra
+  \rightskip=0pt plus 1fil
+  \parfillskip=0pt plus 1fil
+  \hyphenpenalty=10000 \exhyphenpenalty=10000
+  \everypar{\strut\tuna@abrelinha}%
+  \catcode`\#=12 \catcode`\_=12
+  \tuna@linhaporlinha
+}{\par}
+
+% \posicoes{D: xx0232, Dm: x00231, ...}
+% Lista de posições dos acordes, no canto inferior direito da página
+% onde a música acaba.
+\newsavebox\tuna@caixaposicoes
+\newcommand\posicoes{%
+  \begingroup\catcode`\#=12 \catcode`\^^M=10 \tuna@posicoes}
+\ExplSyntaxOn
+\newcommand\tuna@posicoes[1]{%
+  \endgroup
+  \tl_clear:N \l_tmpa_tl
+  \clist_map_inline:nn {#1}
+    { \tl_put_right:Nn \l_tmpa_tl { ##1 \\ } }
+  \global\setbox\tuna@caixaposicoes=\hbox{\color@begingroup
+    \formatoacorde
+    \renewcommand\arraystretch{1}%
+    \begin{tabular}[b]{@{}r@{}}\l_tmpa_tl\end{tabular}\color@endgroup}%
+  \AddToShipoutPictureFG*{\AtTextLowerLeft{%
+    \put(\LenToUnit{\textwidth},\LenToUnit{2pt}){%
+      \makebox[0pt][r]{\usebox\tuna@caixaposicoes}}}}%
+}
+\ExplSyntaxOff
+
+% --- Tablaturas ----------------------------------------------------------
+% \begin{tablatura} ... \end{tablatura} escreve as linhas tal como estão.
+% Dentro, \acordestab{   Am     E} pinta uma linha de acordes.
+% Cada tablatura fica inteira na mesma página, junto da indicação anterior.
+\DefineVerbatimEnvironment{tablatura}{Verbatim}{%
+  fontsize=\fontsize{8}{11.7}\selectfont,
+  xleftmargin=\recuotablatura,
+  samepage=true,
+  commandchars=\\\{\}}
+\BeforeBeginEnvironment{tablatura}{\par\nopagebreak[4]}
+\AtBeginEnvironment{tablatura}{\everypar{}\@beginparpenalty=\@M}
+\newcommand\acordestab[1]{{\itshape\color{acorde}#1}}
+
+% --- Índice --------------------------------------------------------------
+\newcommand\tuna@entradaindice[1]{%
+  \addcontentsline{toc}{section}{#1}}
+\renewcommand*\l@section[2]{%
+  {\formatoletra\@dottedtocline{1}{0pt}{0pt}{#1}{#2}}}
+\renewcommand\@dotsep{2}
+\newcommand\indice{%
+  {\centering\fontetitulo\bfseries\itshape\fontsize{14}{16}\selectfont
+    Índice\par}%
+  \vspace{14pt}%
+  \begin{multicols}{2}
+    \@starttoc{toc}
+  \end{multicols}
+  \clearpage}
+
+\newcommand\tuna@titulo{Cancioneiro}
+\newcommand\titulocancioneiro[1]{\renewcommand\tuna@titulo{#1}}
+
+\AtEndPreamble{%
+  \RequirePackage[hidelinks,bookmarksopen=false]{hyperref}%
+  \hypersetup{pdftitle={\tuna@titulo},pdfauthor={\nometuna}}%
+  \pdfstringdefDisableCommands{\let\textmd\@firstofone}%
+  \renewcommand\tuna@entradaindice[1]{%
+    \phantomsection\addcontentsline{toc}{section}{#1}}%
+}
+
+\endinput

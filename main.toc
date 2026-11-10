@@ -1,0 +1,70 @@
+\contentsline {section}{Engenharia}{2}{section*.1}%
+\contentsline {section}{A Banda}{3}{section*.2}%
+\contentsline {section}{A Barata}{4}{section*.3}%
+\contentsline {section}{A Linda Rosa}{5}{section*.4}%
+\contentsline {section}{A Mulher Gorda}{6}{section*.5}%
+\contentsline {section}{Adeus Festival}{7}{section*.6}%
+\contentsline {section}{Águas do Dão}{9}{section*.7}%
+\contentsline {section}{Alma Llanera}{10}{section*.8}%
+\contentsline {section}{Amélia Dos Olhos Doces}{11}{section*.9}%
+\contentsline {section}{Amores de Estudante}{12}{section*.10}%
+\contentsline {section}{As Carvoeiras}{13}{section*.11}%
+\contentsline {section}{Assim Mesmo É Que É (Rapariga)}{14}{section*.12}%
+\contentsline {section}{Bella Ciao}{16}{section*.13}%
+\contentsline {section}{Caloirinha dos Meus Sonhos}{17}{section*.14}%
+\contentsline {section}{Cartas de Amor}{18}{section*.15}%
+\contentsline {section}{Chamateia}{19}{section*.16}%
+\contentsline {section}{Charamba}{20}{section*.17}%
+\contentsline {section}{Cielito Lindo}{21}{section*.18}%
+\contentsline {section}{Clavelitos}{22}{section*.19}%
+\contentsline {section}{Celta Israelita \textmd {(Concerto n.º 1 para bandolim)}}{23}{section*.20}%
+\contentsline {section}{Csárdás}{24}{section*.21}%
+\contentsline {section}{Dubi-dubi}{25}{section*.22}%
+\contentsline {section}{Fado do Estudante}{27}{section*.23}%
+\contentsline {section}{Festa da Vida}{28}{section*.24}%
+\contentsline {section}{Flor Sem Tempo}{29}{section*.25}%
+\contentsline {section}{Foi Deus}{30}{section*.26}%
+\contentsline {section}{Guantanamera}{31}{section*.27}%
+\contentsline {section}{História de Portugal}{32}{section*.28}%
+\contentsline {section}{Hoy}{33}{section*.29}%
+\contentsline {section}{Hoy Estoy Aquí}{34}{section*.30}%
+\contentsline {section}{Jesus}{35}{section*.31}%
+\contentsline {section}{La Banda}{36}{section*.32}%
+\contentsline {section}{Lágrimas Negras}{37}{section*.33}%
+\contentsline {section}{Lambada}{38}{section*.34}%
+\contentsline {section}{Laurindinha}{39}{section*.35}%
+\contentsline {section}{Loucos de Lisboa}{40}{section*.36}%
+\contentsline {section}{Madalena}{41}{section*.37}%
+\contentsline {section}{Madalena do Jucú}{42}{section*.38}%
+\contentsline {section}{Manuelorum}{43}{section*.39}%
+\contentsline {section}{Maria, Maria}{44}{section*.40}%
+\contentsline {section}{Menina Estás À Janela}{45}{section*.41}%
+\contentsline {section}{Moçoila}{46}{section*.42}%
+\contentsline {section}{Mulher}{47}{section*.43}%
+\contentsline {section}{Mulheres}{48}{section*.44}%
+\contentsline {section}{Muñequita Linda}{49}{section*.45}%
+\contentsline {section}{Nasci, Sonhei, Cresci, Amei}{50}{section*.46}%
+\contentsline {section}{O Fortuna (Carmina Burana)}{51}{section*.47}%
+\contentsline {section}{O Pito da Maria}{52}{section*.48}%
+\contentsline {section}{O Sonho}{53}{section*.49}%
+\contentsline {section}{Ojos de España}{54}{section*.50}%
+\contentsline {section}{Olá Tuna}{55}{section*.51}%
+\contentsline {section}{Olhos Negros}{56}{section*.52}%
+\contentsline {section}{Ondas do Douro}{57}{section*.53}%
+\contentsline {section}{Para No Verte Más}{58}{section*.54}%
+\contentsline {section}{Parabéns}{59}{section*.55}%
+\contentsline {section}{Pasión}{60}{section*.56}%
+\contentsline {section}{Pilinha}{61}{section*.57}%
+\contentsline {section}{Porto Na Memória}{62}{section*.58}%
+\contentsline {section}{Porto, Pátria, Portugal}{63}{section*.59}%
+\contentsline {section}{Quando a Tuna Chega}{64}{section*.60}%
+\contentsline {section}{Sete e Pico}{65}{section*.61}%
+\contentsline {section}{Só Um Beijo}{66}{section*.62}%
+\contentsline {section}{Sodade}{67}{section*.63}%
+\contentsline {section}{Sol de Inverno}{68}{section*.64}%
+\contentsline {section}{Tico Tico no Fubá}{69}{section*.65}%
+\contentsline {section}{Timor}{70}{section*.66}%
+\contentsline {section}{Tiro ao “Álvaro”}{71}{section*.67}%
+\contentsline {section}{Traçadinho}{72}{section*.68}%
+\contentsline {section}{Trem das Onze}{73}{section*.69}%
+\contentsline {section}{Volver, Volver, Volver}{74}{section*.70}%
